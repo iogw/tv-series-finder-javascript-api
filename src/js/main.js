@@ -12,27 +12,32 @@ function handleClickSearch(event) {
     .then((response) => response.json())
     .then((series) => {
       const ulSearchElement = document.querySelector('.js-search-list');
-      ulSearchElement.innerHTML = '';
+      ulSearchElement.textContent = '';
 
       for (const serie of series) {
         const serieName = serie.show.name;
-        let urlImg = '';
-        let altImg = '';
+        const urlImg =
+          serie.show.image === null
+            ? 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'
+            : serie.show.image.medium;
+        const altImg =
+          serie.show.image === null
+            ? 'Serie sin imagen'
+            : `Imagen de ${serieName}`;
 
-        if (serie.show.image === null) {
-          urlImg = 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
-          altImg = 'Sin imagen';
-        } else {
-          urlImg = serie.show.image.medium;
-          altImg = `Imagen de ${serieName}`;
-        }
-        
-        const nuevaSerie = `<li>
-            <img src="${urlImg}" alt="${altImg}">
-            <p>${serieName}</p>
-           </li>`;
+        const newImgElement = document.createElement('img');
+        newImgElement.setAttribute('src', urlImg);
+        newImgElement.setAttribute('alt', altImg);
 
-        ulSearchElement.innerHTML += nuevaSerie;
+        const newTitleElement = document.createElement('p');
+        const newTitle = document.createTextNode(serieName);
+        newTitleElement.appendChild(newTitle);
+
+        const newListElement = document.createElement('li');
+        newListElement.appendChild(newImgElement);
+        newListElement.appendChild(newTitleElement);
+
+        ulSearchElement.appendChild(newListElement);
       }
     });
 }
