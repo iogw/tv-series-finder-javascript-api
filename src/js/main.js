@@ -2,44 +2,66 @@
 
 const inputElement = document.querySelector('.js-input');
 const btnSearch = document.querySelector('.js-button-search');
+const ulSearchResults = document.querySelector('.js-search-list');
 
-function handleClickSearch(event) {
-  event.preventDefault();
-  const userSearch = inputElement.value;
-  const urlSearch = `//api.tvmaze.com/search/shows?q=${userSearch}`;
+// let seriesList = [];
 
+function createNewLiElement(title, imgUrl, imgAlt) {
+  const newImgElement = document.createElement('img');
+  newImgElement.setAttribute('src', imgUrl);
+  newImgElement.setAttribute('alt', imgAlt);
+
+  const newTitleElement = document.createElement('p');
+  const newTitle = document.createTextNode(title);
+  newTitleElement.appendChild(newTitle);
+
+  const newListElement = document.createElement('li');
+  newListElement.appendChild(newImgElement);
+  newListElement.appendChild(newTitleElement);
+
+  return newListElement;
+}
+
+function renderSerie(serie) {
+  const serieName = serie.show.name;
+  const imgUrl =
+    serie.show.image === null
+      ? 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'
+      : serie.show.image.medium;
+  const imgAlt =
+    serie.show.image === null ? 'Serie sin imagen' : `Imagen de ${serieName}`;
+
+  const newSerie = createNewLiElement(serieName, imgUrl, imgAlt);
+
+  return newSerie;
+}
+
+function printSearchResults(list) {
+  ulSearchResults.textContent = '';
+  for (const element of list) {
+    ulSearchResults.appendChild(renderSerie(element));
+  }
+}
+
+function queryApiAndPrint(urlSearch) {
   fetch(urlSearch)
     .then((response) => response.json())
     .then((series) => {
-      const ulSearchElement = document.querySelector('.js-search-list');
-      ulSearchElement.textContent = '';
-
-      for (const serie of series) {
-        const serieName = serie.show.name;
-        const urlImg =
-          serie.show.image === null
-            ? 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'
-            : serie.show.image.medium;
-        const altImg =
-          serie.show.image === null
-            ? 'Serie sin imagen'
-            : `Imagen de ${serieName}`;
-
-        const newImgElement = document.createElement('img');
-        newImgElement.setAttribute('src', urlImg);
-        newImgElement.setAttribute('alt', altImg);
-
-        const newTitleElement = document.createElement('p');
-        const newTitle = document.createTextNode(serieName);
-        newTitleElement.appendChild(newTitle);
-
-        const newListElement = document.createElement('li');
-        newListElement.appendChild(newImgElement);
-        newListElement.appendChild(newTitleElement);
-
-        ulSearchElement.appendChild(newListElement);
-      }
+      console.log(series);
+      //   seriesList = series;
+      printSearchResults(series);
     });
+}
+
+function urlSearch() {
+  const userSearch = inputElement.value;
+  const finalUrl = `//api.tvmaze.com/search/shows?q=${userSearch}`;
+  return finalUrl;
+}
+
+function handleClickSearch(event) {
+  event.preventDefault();
+  queryApiAndPrint(urlSearch());
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
