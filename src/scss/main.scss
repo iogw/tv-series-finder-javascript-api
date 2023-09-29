@@ -1,0 +1,12 @@
+@import 'core/variables';
+@import 'core/reset';
+@import 'components/code';
+@import 'components/links';
+@import 'layout/page';
+@import 'layout/header';
+@import 'layout/footer';
+@import 'pages/index';
+
+h1{ //prueba
+    background-color: aqua;
+}
