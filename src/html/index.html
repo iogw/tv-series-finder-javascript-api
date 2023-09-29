@@ -10,21 +10,35 @@
     />
     <link rel="stylesheet" href="./assets/css/main.css" />
   </head>
-  <main>
-    <h1>Buscador de series</h1>
-    <form action="">
-      <input type="text" name="" id="" class="js-input" placeholder="Ej: Kawai" value="dexter"/>
-      <button class="js-button-search">Search</button>
-    </form>
-
-    <div>
-       <!-- Resultados de búsqueda -->
-      <ul class="js-search-list">
-      </ul>
-    </div>
-  </main>
-
   <body>
+    <header>
+      <h1>Buscador de series</h1>
+    </header>
+
+    <main class="main">
+      <section class="favorites-list">
+        <form action="">
+          <input
+            type="text"
+            name=""
+            id=""
+            class="js-input"
+            placeholder="Ej: Kawai"
+            value="dexter"
+          />
+          <button class="js-button-search">Search</button>
+        </form>
+
+        <h3>Mis series favoritas</h3>
+        <ul class="js-favorites-list"></ul>
+      </section>
+
+      <section class="results-list">
+        <!-- Resultados de búsqueda -->
+        <ul class="js-search-list"></ul>
+      </section>
+    </main>
+
     <script src="./assets/js/main.js"></script>
   </body>
 </html>

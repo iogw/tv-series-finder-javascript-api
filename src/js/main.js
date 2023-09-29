@@ -6,7 +6,7 @@ const ulSearchResults = document.querySelector('.js-search-list');
 
 // let seriesList = [];
 
-function createNewLiElement(title, imgUrl, imgAlt) {
+function createNewLiElement(liClass, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
   newImgElement.setAttribute('alt', imgAlt);
@@ -16,6 +16,7 @@ function createNewLiElement(title, imgUrl, imgAlt) {
   newTitleElement.appendChild(newTitle);
 
   const newListElement = document.createElement('li');
+  newListElement.setAttribute('class', liClass);
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
 
@@ -31,7 +32,7 @@ function renderSerie(serie) {
   const imgAlt =
     serie.show.image === null ? 'Serie sin imagen' : `Imagen de ${serieName}`;
 
-  const newSerie = createNewLiElement(serieName, imgUrl, imgAlt);
+  const newSerie = createNewLiElement('li-search-serie', serieName, imgUrl, imgAlt);
 
   return newSerie;
 }
@@ -65,3 +66,9 @@ function handleClickSearch(event) {
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
+
+
+/* 3.- FAVORITOS
+- al hacer click COLOR DE FONDO Y FUENTE se INTERCAMBIAN
+- LISTADO A LA IZQUIERDA de favoritos, debajo del formulario de búsqueda
+- Los favs se mantienen cuando se cambia la búsqueda => let/const tipo array */
