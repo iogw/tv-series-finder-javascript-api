@@ -14,7 +14,7 @@
   max-width: 20rem;
   border: 0.5rem solid rgb(255, 180, 42);
 }
-.li-search-serie-result,
+.search-item-result,
 .results-section {
   display: inline-block;
   padding: 2rem;
@@ -23,7 +23,7 @@
   border: 0.5rem solid rgb(255, 180, 42);
   list-style: none;
 }
-.li-search-serie-result{
+.search-item-result{
   max-width: 26rem;
   cursor: pointer;
 }

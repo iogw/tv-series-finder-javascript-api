@@ -5,8 +5,13 @@ const btnSearch = document.querySelector('.js-button-search');
 const searchResultsSection = document.querySelector('.js-results-section');
 const favoritesSection = document.querySelector('.js-favorites');
 
-let seriesSearchList = [];
+const defaultImage =
+  'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
+
+let searchList = [];
 let favList = [];
+
+// FAVORITE FUNCTIONALITY (IN PROGRESS)
 
 function printFavoritesList(favoriteList) {
   // favoritesSection.removeChild()
@@ -18,7 +23,7 @@ function printFavoritesList(favoriteList) {
     newUlElement.appendChild(serieFav);
   }
   favoritesSection.appendChild(newUlElement);
-  console.log(seriesSearchList);
+  console.log(searchList);
   console.log(favList);
 }
 
@@ -39,6 +44,7 @@ function addSerieClickListeners() {
   }
 }
 
+// RENDER AND PRINT LIST CARDS
 function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
@@ -57,20 +63,17 @@ function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   return newListElement;
 }
 
-function renderSerieCard(serie) {
+function renderSerieCard(item, cardClass) {
   //Content and atributes for every serie-card
-  const serieID = serie.show.id;
-  const serieName = serie.show.name;
-  const imgUrl =
-    serie.show.image === null
-      ? 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'
-      : serie.show.image.medium;
+  const serieID = item.id;
+  const serieName = item.title;
+  const imgUrl = item.image;
   const imgAlt =
-    serie.show.image === null ? 'Serie sin imagen' : `Imagen de ${serieName}`;
+    item.image === defaultImage ? 'Serie sin imagen' : `Imagen de ${serieName}`;
 
   //Create serie-card
   const newSerieCard = createNewLiElement(
-    'li-search-serie-result',
+    cardClass,
     serieID,
     serieName,
     imgUrl,
@@ -79,23 +82,30 @@ function renderSerieCard(serie) {
   return newSerieCard;
 }
 
-function printSearchResults(resultsList) {
-  searchResultsSection.textContent = '';
+function printList(wheretoPrint, listToPrint, classOfItem) {
+  wheretoPrint.textContent = '';
   const newUlElement = document.createElement('ul');
-  for (const result of resultsList) {
-    newUlElement.appendChild(renderSerieCard(result));
+  for (const itemOfList of listToPrint) {
+    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
   }
-  searchResultsSection.appendChild(newUlElement);
-  addSerieClickListeners();
+  wheretoPrint.appendChild(newUlElement);
+  // addSerieClickListeners();
 }
 
-function queryApiAndPrint(urlSearch) {
+function queryApiAndPrintResults(urlSearch) {
+  searchList = [];
   fetch(urlSearch)
     .then((response) => response.json())
     .then((series) => {
-      console.log(series);
-      seriesSearchList = series;
-      printSearchResults(seriesSearchList);
+      for (const serie of series) {
+        let serieObject = {};
+        serieObject.id = serie.show.id;
+        serieObject.title = serie.show.name;
+        serieObject.image =
+          serie.show.image === null ? defaultImage : serie.show.image.medium;
+        searchList.push(serieObject);
+      }
+      printList(searchResultsSection, searchList, 'search-item-result');
     });
 }
 
@@ -107,7 +117,9 @@ function urlSearch() {
 
 function handleClickSearch(event) {
   event.preventDefault();
-  queryApiAndPrint(urlSearch());
+  queryApiAndPrintResults(urlSearch());
+
+  // activateFavoriteFunctionality();
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
