@@ -14,6 +14,14 @@ const favSearchColor = '#ffa600';
 let searchList = [];
 let favList = [];
 
+//LOCAL STORAGE
+const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
+if (savedLsFavs !== null) {
+  updateFavs(savedLsFavs);
+  // printList(favoritesSection, savedLsFavs, favCardClass);
+  favList = savedLsFavs;
+}
+
 // FAVORITE FUNCTIONALITY
 
 function handleFavSelection(event) {
@@ -29,8 +37,12 @@ function handleFavSelection(event) {
     serieClicked.style.backgroundColor = favSearchColor;
     favList.push(cardSelected);
   }
-  printList(favoritesSection, favList, favCardClass);
+  // printList(favoritesSection, favList, favCardClass);
+  updateFavs(favList);
+  localStorage.setItem('favList', JSON.stringify(favList));
 }
+
+//ADD LISTENERS
 
 function addClickListeners(toClass, handleFunction) {
   const classToListen = `.${toClass}`;
@@ -78,6 +90,8 @@ function renderSerieCard(item, cardClass) {
   return newSerieCard;
 }
 
+//PRINT FUNCTIONS
+
 function printList(wheretoPrint, listToPrint, classOfItem) {
   wheretoPrint.textContent = '';
   const newUlElement = document.createElement('ul');
@@ -85,6 +99,10 @@ function printList(wheretoPrint, listToPrint, classOfItem) {
     newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
   }
   wheretoPrint.appendChild(newUlElement);
+}
+
+function updateFavs(updatedFavList) {
+  printList(favoritesSection, updatedFavList, favCardClass);
 }
 
 function queryApiPrintResultsAddListeners(urlSearch) {
