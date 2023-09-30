@@ -18,8 +18,8 @@ let favList = [];
 //LOCAL STORAGE
 const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
 if (savedLsFavs !== null) {
-  updateFavsAndLS(savedLsFavs);
   favList = savedLsFavs;
+  updateFavsAndLS(favList);
 }
 // FAVORITE FUNCTIONALITY
 
@@ -32,11 +32,13 @@ function handleClickInSearchCards(event) {
     (item) => item.id === cardSelected.id
   );
 
+  //¿Is on fav list? Then add or delete
+
   if (indexinFavOfSelected === -1) {
     serieClicked.style.backgroundColor = favSearchColor;
     favList.push(cardSelected);
   } else {
-    serieClicked.style.backgroundColor = "";
+    serieClicked.style.backgroundColor = '';
     favList.splice(indexinFavOfSelected, 1);
   }
   updateFavsAndLS(favList);
@@ -51,17 +53,21 @@ function handleDeleteButton(event) {
   updateFavsAndLS(favList);
 }
 //ADD LISTENERS
+function docQuerySel(toClass) {
+  const classToSelect = `.${toClass}`;
+  const elementsToSelect = document.querySelectorAll(classToSelect);
+  return elementsToSelect;
+}
 
 function addClickListeners(toClass, handleFunction) {
-  const classToListen = `.${toClass}`;
-  const elementsToListen = document.querySelectorAll(classToListen);
+  const elementsToListen = docQuerySel(toClass);
   for (const elementToListen of elementsToListen) {
     elementToListen.addEventListener('click', handleFunction);
   }
 }
 
 // RENDER AND PRINT LIST CARDS
-function createNewLiElement(liClass, liID, title, imgUrl, imgAlt, isItFav) {
+function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
   newImgElement.setAttribute('alt', imgAlt);
@@ -76,19 +82,11 @@ function createNewLiElement(liClass, liID, title, imgUrl, imgAlt, isItFav) {
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
   newListElement.appendChild(newTitleElement);
-  if (isItFav === 'yes') {
-    const newDeleteButton = document.createElement('button');
-    newDeleteButton.setAttribute('class', deleteBtnClss);
-    const buttonContent = document.createTextNode('x');
-    newDeleteButton.appendChild(buttonContent);
-
-    newListElement.appendChild(newDeleteButton);
-  }
 
   return newListElement;
 }
 
-function renderSerieCard(item, cardClass, isItFav) {
+function renderSerieCard(item, cardClass) {
   //Content and atributes for every serie-card
   const serieID = item.id;
   const serieName = item.title;
@@ -102,27 +100,64 @@ function renderSerieCard(item, cardClass, isItFav) {
     serieID,
     serieName,
     imgUrl,
-    imgAlt,
-    isItFav
+    imgAlt
   );
   return newSerieCard;
 }
 
 //PRINT FUNCTIONS
 
-function printList(wheretoPrint, listToPrint, classOfItem, isItFav) {
-  wheretoPrint.textContent = '';
+function printList(whereToPrint, listToPrint, classOfItem) {
+  whereToPrint.textContent = '';
   const newUlElement = document.createElement('ul');
   for (const itemOfList of listToPrint) {
-    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem, isItFav));
+    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
   }
-  wheretoPrint.appendChild(newUlElement);
+  whereToPrint.appendChild(newUlElement);
+}
+
+function addDeleteButtons(toClass) {
+  const liFavElements = docQuerySel(toClass);
+
+  for (const liFavElement of liFavElements) {
+    const newDeleteButton = document.createElement('button');
+    const buttonContent = document.createTextNode('x');
+    newDeleteButton.setAttribute('class', deleteBtnClss);
+    newDeleteButton.appendChild(buttonContent);
+
+    liFavElement.appendChild(newDeleteButton);
+    addClickListeners(deleteBtnClss, handleDeleteButton);
+  }
 }
 
 function updateFavsAndLS(updatedFavList) {
-  printList(favoritesSection, updatedFavList, favCardClass, 'yes');
-  addClickListeners(deleteBtnClss, handleDeleteButton);
+  printList(favoritesSection, updatedFavList, favCardClass);
+  addDeleteButtons(favCardClass);
   localStorage.setItem('favList', JSON.stringify(updatedFavList));
+
+  const liSearchEls = docQuerySel(searchCardClass);
+  const liFavEls = docQuerySel(favCardClass);
+
+  console.log(liSearchEls);
+
+  // for (const elementOnList of liSearchEls) {
+  //   for (const fav of liFavEls) {
+  //     if (fav.id === elementOnList.id) {
+  //       elementOnList.style.backgroundColor = favSearchColor;
+  //     } else {
+  //       elementOnList.style.backgroundColor = '';
+  //     }
+  //   }
+  // }
+  for (const fav of liFavEls) {
+    for (const elementOnList of liSearchEls) {
+      if (fav.id === elementOnList.id) {
+        elementOnList.style.backgroundColor = favSearchColor;
+      } else {
+        elementOnList.style.backgroundColor = '';
+      }
+    }
+  }
 }
 
 function queryApiPrintResults(urlSearch) {
@@ -138,7 +173,7 @@ function queryApiPrintResults(urlSearch) {
           serie.show.image === null ? defaultImage : serie.show.image.medium;
         searchList.push(serieObject);
       }
-      printList(searchResultsSection, searchList, searchCardClass, 'no');
+      printList(searchResultsSection, searchList, searchCardClass);
       addClickListeners(searchCardClass, handleClickInSearchCards);
     });
 }
@@ -155,3 +190,18 @@ function handleClickSearch(event) {
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
+
+/* 
+¿Cuándo tienen las tarjetas en la búsqueda el fondo cambiado?
+Cuando se hace click sobre ellas (se añaden a fav)
+Cuando al pintar están en la lista de favs
+
+¿Cuándo se quita ese fondo?
+Cuando se elimina de fav
+
+ENTONCES
+
+Cada vez que se actualiza la lista de favs:
+Se remapean los resultados a ver si alguno está ahí
+
+*/
