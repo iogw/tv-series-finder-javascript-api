@@ -7,6 +7,8 @@ const favoritesSection = document.querySelector('.js-favorites');
 
 const defaultImage =
   'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
+const searchCardClass = 'search-item-result';
+const favCardClass = 'fav-item';
 
 let searchList = [];
 let favList = [];
@@ -30,17 +32,20 @@ function printFavoritesList(favoriteList) {
 function handleFavSelection(event) {
   const color = '#ffa600';
   const serieClicked = event.currentTarget;
-
   serieClicked.style.backgroundColor = color;
-  favList.push(serieClicked);
-  console.log(favList);
-  printFavoritesList(favList);
+
+  const cardSelected = searchList.find(
+    (item) => item.id === parseInt(serieClicked.id)
+  );
+  favList.push(cardSelected);
+  printList(favoritesSection, favList, favCardClass);
 }
 
-function addSerieClickListeners() {
-  const seriesPrinted = document.querySelectorAll('.li-search-serie-result');
-  for (const seriePrinted of seriesPrinted) {
-    seriePrinted.addEventListener('click', handleFavSelection);
+function addClickListeners(toClass, handleFunction) {
+  const classToListen = `.${toClass}`;
+  const elementsToListen = document.querySelectorAll(classToListen);
+  for (const elementToListen of elementsToListen) {
+    elementToListen.addEventListener('click', handleFunction);
   }
 }
 
@@ -92,7 +97,7 @@ function printList(wheretoPrint, listToPrint, classOfItem) {
   // addSerieClickListeners();
 }
 
-function queryApiAndPrintResults(urlSearch) {
+function queryApiPrintResultsAddListeners(urlSearch) {
   searchList = [];
   fetch(urlSearch)
     .then((response) => response.json())
@@ -105,7 +110,8 @@ function queryApiAndPrintResults(urlSearch) {
           serie.show.image === null ? defaultImage : serie.show.image.medium;
         searchList.push(serieObject);
       }
-      printList(searchResultsSection, searchList, 'search-item-result');
+      printList(searchResultsSection, searchList, searchCardClass);
+      addClickListeners(searchCardClass, handleFavSelection);
     });
 }
 
@@ -117,9 +123,7 @@ function urlSearch() {
 
 function handleClickSearch(event) {
   event.preventDefault();
-  queryApiAndPrintResults(urlSearch());
-
-  // activateFavoriteFunctionality();
+  queryApiPrintResultsAddListeners(urlSearch());
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
