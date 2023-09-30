@@ -9,35 +9,23 @@ const defaultImage =
   'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
 const searchCardClass = 'search-item-result';
 const favCardClass = 'fav-item';
+const favSearchColor = '#ffa600';
 
 let searchList = [];
 let favList = [];
 
-// FAVORITE FUNCTIONALITY (IN PROGRESS)
-
-function printFavoritesList(favoriteList) {
-  // favoritesSection.removeChild()
-  // favoritesSection.replaceChild()
-  // favoritesSection.textContent = '';
-  const newUlElement = document.createElement('ul');
-
-  for (const serieFav of favoriteList) {
-    newUlElement.appendChild(serieFav);
-  }
-  favoritesSection.appendChild(newUlElement);
-  console.log(searchList);
-  console.log(favList);
-}
+// FAVORITE FUNCTIONALITY
 
 function handleFavSelection(event) {
-  const color = '#ffa600';
   const serieClicked = event.currentTarget;
-  serieClicked.style.backgroundColor = color;
-
   const cardSelected = searchList.find(
     (item) => item.id === parseInt(serieClicked.id)
   );
-  favList.push(cardSelected);
+
+  if (favList.indexOf(cardSelected) === -1) {
+    serieClicked.style.backgroundColor = favSearchColor;
+    favList.push(cardSelected);
+  }
   printList(favoritesSection, favList, favCardClass);
 }
 
@@ -94,7 +82,6 @@ function printList(wheretoPrint, listToPrint, classOfItem) {
     newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
   }
   wheretoPrint.appendChild(newUlElement);
-  // addSerieClickListeners();
 }
 
 function queryApiPrintResultsAddListeners(urlSearch) {
