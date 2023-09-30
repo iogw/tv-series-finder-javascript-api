@@ -40,10 +40,13 @@ function handleFavSelection(event) {
   updateFavsAndLS(favList);
 }
 function handleDeleteButton(event) {
-  console.log("hola botón");
   const buttonClicked = event.currentTarget;
   const favToDelete = buttonClicked.parentElement;
-  console.log(favToDelete);
+  const indexinFavOfSelected = favList.findIndex(
+    (item) => item.id === parseInt(favToDelete.id)
+  );
+  favList.splice(indexinFavOfSelected, 1);
+  updateFavsAndLS(favList);
 }
 //ADD LISTENERS
 
