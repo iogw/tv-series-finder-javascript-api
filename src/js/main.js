@@ -2,11 +2,44 @@
 
 const inputElement = document.querySelector('.js-input');
 const btnSearch = document.querySelector('.js-button-search');
-const ulSearchResults = document.querySelector('.js-search-list');
+const searchResultsSection = document.querySelector('.js-results-section');
+const favoritesSection = document.querySelector('.js-favorites');
 
-// let seriesList = [];
+let seriesSearchList = [];
+let favList = [];
 
-function createNewLiElement(liClass, title, imgUrl, imgAlt) {
+function printFavoritesList(favoriteList) {
+  // favoritesSection.removeChild()
+  // favoritesSection.replaceChild()
+  // favoritesSection.textContent = '';
+  const newUlElement = document.createElement('ul');
+
+  for (const serieFav of favoriteList) {
+    newUlElement.appendChild(serieFav);
+  }
+  favoritesSection.appendChild(newUlElement);
+  console.log(seriesSearchList);
+  console.log(favList);
+}
+
+function handleFavSelection(event) {
+  const color = '#ffa600';
+  const serieClicked = event.currentTarget;
+
+  serieClicked.style.backgroundColor = color;
+  favList.push(serieClicked);
+  console.log(favList);
+  printFavoritesList(favList);
+}
+
+function addSerieClickListeners() {
+  const seriesPrinted = document.querySelectorAll('.li-search-serie-result');
+  for (const seriePrinted of seriesPrinted) {
+    seriePrinted.addEventListener('click', handleFavSelection);
+  }
+}
+
+function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
   newImgElement.setAttribute('alt', imgAlt);
@@ -17,13 +50,16 @@ function createNewLiElement(liClass, title, imgUrl, imgAlt) {
 
   const newListElement = document.createElement('li');
   newListElement.setAttribute('class', liClass);
+  newListElement.setAttribute('id', liID);
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
 
   return newListElement;
 }
 
-function renderSerie(serie) {
+function renderSerieCard(serie) {
+  //Content and atributes for every serie-card
+  const serieID = serie.show.id;
   const serieName = serie.show.name;
   const imgUrl =
     serie.show.image === null
@@ -32,16 +68,25 @@ function renderSerie(serie) {
   const imgAlt =
     serie.show.image === null ? 'Serie sin imagen' : `Imagen de ${serieName}`;
 
-  const newSerie = createNewLiElement('li-search-serie', serieName, imgUrl, imgAlt);
-
-  return newSerie;
+  //Create serie-card
+  const newSerieCard = createNewLiElement(
+    'li-search-serie-result',
+    serieID,
+    serieName,
+    imgUrl,
+    imgAlt
+  );
+  return newSerieCard;
 }
 
-function printSearchResults(list) {
-  ulSearchResults.textContent = '';
-  for (const element of list) {
-    ulSearchResults.appendChild(renderSerie(element));
+function printSearchResults(resultsList) {
+  searchResultsSection.textContent = '';
+  const newUlElement = document.createElement('ul');
+  for (const result of resultsList) {
+    newUlElement.appendChild(renderSerieCard(result));
   }
+  searchResultsSection.appendChild(newUlElement);
+  addSerieClickListeners();
 }
 
 function queryApiAndPrint(urlSearch) {
@@ -49,8 +94,8 @@ function queryApiAndPrint(urlSearch) {
     .then((response) => response.json())
     .then((series) => {
       console.log(series);
-      //   seriesList = series;
-      printSearchResults(series);
+      seriesSearchList = series;
+      printSearchResults(seriesSearchList);
     });
 }
 
@@ -66,9 +111,3 @@ function handleClickSearch(event) {
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
-
-
-/* 3.- FAVORITOS
-- al hacer click COLOR DE FONDO Y FUENTE se INTERCAMBIAN
-- LISTADO A LA IZQUIERDA de favoritos, debajo del formulario de búsqueda
-- Los favs se mantienen cuando se cambia la búsqueda => let/const tipo array */

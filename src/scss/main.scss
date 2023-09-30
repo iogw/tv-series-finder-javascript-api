@@ -6,3 +6,27 @@
 @import 'layout/header';
 @import 'layout/footer';
 @import 'pages/index';
+
+.main {
+  display: flex;
+}
+.search-fav-section {
+  max-width: 20rem;
+  border: 0.5rem solid rgb(255, 180, 42);
+}
+.li-search-serie-result,
+.results-section {
+  display: inline-block;
+  padding: 2rem;
+  margin: 2rem;
+  background-color: rgba(190, 136, 36, 0.2);
+  border: 0.5rem solid rgb(255, 180, 42);
+  list-style: none;
+}
+.li-search-serie-result{
+  max-width: 26rem;
+  cursor: pointer;
+}
+.favorite-selection {
+  background-color: #ffa600;
+}
