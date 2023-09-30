@@ -21,8 +21,11 @@ function handleFavSelection(event) {
   const cardSelected = searchList.find(
     (item) => item.id === parseInt(serieClicked.id)
   );
+  const indexinFavOfSelected = favList.findIndex(
+    (item) => item.id === cardSelected.id
+  );
 
-  if (favList.indexOf(cardSelected) === -1) {
+  if (indexinFavOfSelected === -1) {
     serieClicked.style.backgroundColor = favSearchColor;
     favList.push(cardSelected);
   }
