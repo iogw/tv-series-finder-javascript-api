@@ -21,10 +21,9 @@ if (savedLsFavs !== null) {
   updateFavsAndLS(savedLsFavs);
   favList = savedLsFavs;
 }
-
 // FAVORITE FUNCTIONALITY
 
-function handleFavSelection(event) {
+function handleClickInSearchCards(event) {
   const serieClicked = event.currentTarget;
   const cardSelected = searchList.find(
     (item) => item.id === parseInt(serieClicked.id)
@@ -36,6 +35,9 @@ function handleFavSelection(event) {
   if (indexinFavOfSelected === -1) {
     serieClicked.style.backgroundColor = favSearchColor;
     favList.push(cardSelected);
+  } else {
+    serieClicked.style.backgroundColor = "";
+    favList.splice(indexinFavOfSelected, 1);
   }
   updateFavsAndLS(favList);
 }
@@ -137,7 +139,7 @@ function queryApiPrintResults(urlSearch) {
         searchList.push(serieObject);
       }
       printList(searchResultsSection, searchList, searchCardClass, 'no');
-      addClickListeners(searchCardClass, handleFavSelection);
+      addClickListeners(searchCardClass, handleClickInSearchCards);
     });
 }
 
