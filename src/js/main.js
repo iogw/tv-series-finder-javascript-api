@@ -10,6 +10,7 @@ const defaultImage =
 const searchCardClass = 'search-item-result';
 const favCardClass = 'fav-item';
 const favSearchColor = '#ffa600';
+const deleteBtnClss = 'delete-btn';
 
 let searchList = [];
 let favList = [];
@@ -17,8 +18,7 @@ let favList = [];
 //LOCAL STORAGE
 const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
 if (savedLsFavs !== null) {
-  updateFavs(savedLsFavs);
-  // printList(favoritesSection, savedLsFavs, favCardClass);
+  updateFavsAndLS(savedLsFavs);
   favList = savedLsFavs;
 }
 
@@ -37,11 +37,14 @@ function handleFavSelection(event) {
     serieClicked.style.backgroundColor = favSearchColor;
     favList.push(cardSelected);
   }
-  // printList(favoritesSection, favList, favCardClass);
-  updateFavs(favList);
-  localStorage.setItem('favList', JSON.stringify(favList));
+  updateFavsAndLS(favList);
 }
-
+function handleDeleteButton(event) {
+  console.log("hola botón");
+  const buttonClicked = event.currentTarget;
+  const favToDelete = buttonClicked.parentElement;
+  console.log(favToDelete);
+}
 //ADD LISTENERS
 
 function addClickListeners(toClass, handleFunction) {
@@ -53,7 +56,7 @@ function addClickListeners(toClass, handleFunction) {
 }
 
 // RENDER AND PRINT LIST CARDS
-function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
+function createNewLiElement(liClass, liID, title, imgUrl, imgAlt, isItFav) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
   newImgElement.setAttribute('alt', imgAlt);
@@ -67,11 +70,20 @@ function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   newListElement.setAttribute('id', liID);
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
+  newListElement.appendChild(newTitleElement);
+  if (isItFav === 'yes') {
+    const newDeleteButton = document.createElement('button');
+    newDeleteButton.setAttribute('class', deleteBtnClss);
+    const buttonContent = document.createTextNode('x');
+    newDeleteButton.appendChild(buttonContent);
+
+    newListElement.appendChild(newDeleteButton);
+  }
 
   return newListElement;
 }
 
-function renderSerieCard(item, cardClass) {
+function renderSerieCard(item, cardClass, isItFav) {
   //Content and atributes for every serie-card
   const serieID = item.id;
   const serieName = item.title;
@@ -85,27 +97,30 @@ function renderSerieCard(item, cardClass) {
     serieID,
     serieName,
     imgUrl,
-    imgAlt
+    imgAlt,
+    isItFav
   );
   return newSerieCard;
 }
 
 //PRINT FUNCTIONS
 
-function printList(wheretoPrint, listToPrint, classOfItem) {
+function printList(wheretoPrint, listToPrint, classOfItem, isItFav) {
   wheretoPrint.textContent = '';
   const newUlElement = document.createElement('ul');
   for (const itemOfList of listToPrint) {
-    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
+    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem, isItFav));
   }
   wheretoPrint.appendChild(newUlElement);
 }
 
-function updateFavs(updatedFavList) {
-  printList(favoritesSection, updatedFavList, favCardClass);
+function updateFavsAndLS(updatedFavList) {
+  printList(favoritesSection, updatedFavList, favCardClass, 'yes');
+  addClickListeners(deleteBtnClss, handleDeleteButton);
+  localStorage.setItem('favList', JSON.stringify(updatedFavList));
 }
 
-function queryApiPrintResultsAddListeners(urlSearch) {
+function queryApiPrintResults(urlSearch) {
   searchList = [];
   fetch(urlSearch)
     .then((response) => response.json())
@@ -118,7 +133,7 @@ function queryApiPrintResultsAddListeners(urlSearch) {
           serie.show.image === null ? defaultImage : serie.show.image.medium;
         searchList.push(serieObject);
       }
-      printList(searchResultsSection, searchList, searchCardClass);
+      printList(searchResultsSection, searchList, searchCardClass, 'no');
       addClickListeners(searchCardClass, handleFavSelection);
     });
 }
@@ -131,7 +146,7 @@ function urlSearch() {
 
 function handleClickSearch(event) {
   event.preventDefault();
-  queryApiPrintResultsAddListeners(urlSearch());
+  queryApiPrintResults(urlSearch());
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
