@@ -1,17 +1,19 @@
 'use strict';
 
 //CONSTANTS
-const inputElement = document.querySelector('.js-input');
-const btnSearch = document.querySelector('.js-button-search');
-const searchResultsSection = document.querySelector('.js-results-section');
+const inputElement = document.querySelector('.js-search-input');
+const btnSearch = document.querySelector('.js-search-button');
+const labelMsgError = document.querySelector('.js-msg-error');
 const favoritesSection = document.querySelector('.js-favorites');
+const searchResultsSection = document.querySelector('.js-results-section');
 
 //Default
 const defaultImage =
   'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
 const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Neko';
 
-const favMarkedColor = '#ffa600';
+const favMarkedBgColor = '#ffa600';
+const favMarkedTextColor = '#fff';
 
 //  HTML-CSS CLASS
 const searchCardClass = 'search-item-result';
@@ -173,8 +175,10 @@ function markSearchCardOnFavs() {
 
     if (indexinFavOfSelected === -1) {
       elementOnList.style.backgroundColor = '';
+      elementOnList.style.color = '';
     } else {
-      elementOnList.style.backgroundColor = favMarkedColor;
+      elementOnList.style.backgroundColor = favMarkedBgColor;
+      elementOnList.style.color = favMarkedTextColor;
     }
   }
 }
@@ -192,8 +196,7 @@ function updateSearchList() {
   markSearchCardOnFavs();
 }
 
-function msgErrorApi(error) {
-  const labelMsgError = document.querySelector('.js-msg-error');
+function msgError(error) {
   const errMsgContent = document.createTextNode(
     `Ha sucedido un error: ${error}`
   );
@@ -219,12 +222,16 @@ function queryApiPrintResults(urlSearch) {
       updateSearchList();
     })
     .catch((error) => {
-      msgErrorApi(error);
+      msgError(error);
     });
 }
 
 function urlUserSearch() {
   const userSearch = inputElement.value;
+  labelMsgError.textContent='';
+  if (userSearch === '') {
+    msgError('¡No has buscado nada!');
+  }
   const finalUrl = `//api.tvmaze.com/search/shows?q=${userSearch}`;
   return finalUrl;
 }
