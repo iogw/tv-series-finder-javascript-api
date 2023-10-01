@@ -8,8 +8,7 @@ const favoritesSection = document.querySelector('.js-favorites');
 const searchResultsSection = document.querySelector('.js-results-section');
 
 //Default
-const defaultImage =
-  'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
+const defaultImage = './assets/images/img-not-found.png';
 const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Neko';
 
 const favMarkedBgColor = '#ffa600';
@@ -228,7 +227,7 @@ function queryApiPrintResults(urlSearch) {
 
 function urlUserSearch() {
   const userSearch = inputElement.value;
-  labelMsgError.textContent='';
+  labelMsgError.textContent = '';
   if (userSearch === '') {
     msgError('¡No has buscado nada!');
   }
