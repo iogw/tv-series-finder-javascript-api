@@ -1,21 +1,26 @@
 'use strict';
 
+//CONSTANTS
 const inputElement = document.querySelector('.js-input');
 const btnSearch = document.querySelector('.js-button-search');
 const searchResultsSection = document.querySelector('.js-results-section');
 const favoritesSection = document.querySelector('.js-favorites');
 
+//Default
 const defaultImage =
   'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
+const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Kawai';
+
+const favMarkedColor = '#ffa600';
+
+//  HTML-CSS CLASS
 const searchCardClass = 'search-item-result';
 const favCardClass = 'fav-item';
-const favSearchColor = '#ffa600';
 const deleteBtnClss = 'delete-btn';
+const resetBtnClss = 'reset-btn';
 
 let searchList = [];
 let favList = [];
-
-const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Kawai';
 
 //LOCAL STORAGE
 const savedDefaultPage = JSON.parse(localStorage.getItem('defaultPage'));
@@ -59,6 +64,11 @@ function handleDeleteButton(event) {
   favList.splice(indexinFavOfSelected, 1);
   updateFavsAndLS();
 }
+function handleResetButton() {
+  favList = [];
+  updateFavsAndLS();
+}
+
 //ADD LISTENERS
 function docQuerySel(toClass) {
   const classToSelect = `.${toClass}`;
@@ -137,6 +147,24 @@ function addDeleteButtons(toClass) {
   }
 }
 
+function addResetFavButton() {
+  const newDeleteButton = document.createElement('button');
+  const buttonContent = document.createTextNode('Eliminar todos tus favoritos');
+  newDeleteButton.setAttribute('class', resetBtnClss);
+  newDeleteButton.appendChild(buttonContent);
+  console.log(favList);
+  if (favList.length === 0) {
+    newDeleteButton.setAttribute('disabled', 'disabled');
+  } else {
+    newDeleteButton.removeAttribute('disabled');
+  }
+  favList.length === 0
+    ? newDeleteButton.setAttribute('disabled', 'disabled')
+    : newDeleteButton.removeAttribute('disabled');
+
+  favoritesSection.firstElementChild.appendChild(newDeleteButton);
+  addClickListeners(resetBtnClss, handleResetButton);
+}
 function markSearchCardOnFavs() {
   const liSearchEls = docQuerySel(searchCardClass);
   for (const elementOnList of liSearchEls) {
@@ -147,7 +175,7 @@ function markSearchCardOnFavs() {
     if (indexinFavOfSelected === -1) {
       elementOnList.style.backgroundColor = '';
     } else {
-      elementOnList.style.backgroundColor = favSearchColor;
+      elementOnList.style.backgroundColor = favMarkedColor;
     }
   }
 }
@@ -155,6 +183,7 @@ function markSearchCardOnFavs() {
 function updateFavsAndLS() {
   printList(favoritesSection, favList, favCardClass);
   addDeleteButtons(favCardClass);
+  addResetFavButton();
   markSearchCardOnFavs();
   localStorage.setItem('favList', JSON.stringify(favList));
 }
