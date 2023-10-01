@@ -15,33 +15,40 @@ const deleteBtnClss = 'delete-btn';
 let searchList = [];
 let favList = [];
 
+const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Kawai';
+
 //LOCAL STORAGE
+const savedDefaultPage = JSON.parse(localStorage.getItem('defaultPage'));
+if (savedDefaultPage === null) {
+  queryApiPrintResults(defaultUrl);
+} else {
+  searchList = savedDefaultPage;
+  updateSearchList();
+}
+
 const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
 if (savedLsFavs !== null) {
   favList = savedLsFavs;
-  updateFavsAndLS(favList);
+  updateFavsAndLS();
 }
-// FAVORITE FUNCTIONALITY
 
+// FAVORITE FUNCTIONALITY
 function handleClickInSearchCards(event) {
-  const serieClicked = event.currentTarget;
-  const cardSelected = searchList.find(
-    (item) => item.id === parseInt(serieClicked.id)
-  );
+  const cardClicked = event.currentTarget;
   const indexinFavOfSelected = favList.findIndex(
-    (item) => item.id === cardSelected.id
+    (item) => item.id === parseInt(cardClicked.id)
+  );
+  const copyOfCardSelected = searchList.find(
+    (item) => item.id === parseInt(cardClicked.id)
   );
 
   //¿Is on fav list? Then add or delete
-
   if (indexinFavOfSelected === -1) {
-    serieClicked.style.backgroundColor = favSearchColor;
-    favList.push(cardSelected);
+    favList.push(copyOfCardSelected);
   } else {
-    serieClicked.style.backgroundColor = '';
     favList.splice(indexinFavOfSelected, 1);
   }
-  updateFavsAndLS(favList);
+  updateFavsAndLS();
 }
 function handleDeleteButton(event) {
   const buttonClicked = event.currentTarget;
@@ -50,7 +57,7 @@ function handleDeleteButton(event) {
     (item) => item.id === parseInt(favToDelete.id)
   );
   favList.splice(indexinFavOfSelected, 1);
-  updateFavsAndLS(favList);
+  updateFavsAndLS();
 }
 //ADD LISTENERS
 function docQuerySel(toClass) {
@@ -130,34 +137,31 @@ function addDeleteButtons(toClass) {
   }
 }
 
-function updateFavsAndLS(updatedFavList) {
-  printList(favoritesSection, updatedFavList, favCardClass);
-  addDeleteButtons(favCardClass);
-  localStorage.setItem('favList', JSON.stringify(updatedFavList));
-
+function markSearchCardOnFavs() {
   const liSearchEls = docQuerySel(searchCardClass);
-  const liFavEls = docQuerySel(favCardClass);
+  for (const elementOnList of liSearchEls) {
+    const indexinFavOfSelected = favList.findIndex(
+      (item) => item.id === parseInt(elementOnList.id)
+    );
 
-  console.log(liSearchEls);
-
-  // for (const elementOnList of liSearchEls) {
-  //   for (const fav of liFavEls) {
-  //     if (fav.id === elementOnList.id) {
-  //       elementOnList.style.backgroundColor = favSearchColor;
-  //     } else {
-  //       elementOnList.style.backgroundColor = '';
-  //     }
-  //   }
-  // }
-  for (const fav of liFavEls) {
-    for (const elementOnList of liSearchEls) {
-      if (fav.id === elementOnList.id) {
-        elementOnList.style.backgroundColor = favSearchColor;
-      } else {
-        elementOnList.style.backgroundColor = '';
-      }
+    if (indexinFavOfSelected === -1) {
+      elementOnList.style.backgroundColor = '';
+    } else {
+      elementOnList.style.backgroundColor = favSearchColor;
     }
   }
+}
+
+function updateFavsAndLS() {
+  printList(favoritesSection, favList, favCardClass);
+  addDeleteButtons(favCardClass);
+  markSearchCardOnFavs();
+  localStorage.setItem('favList', JSON.stringify(favList));
+}
+function updateSearchList() {
+  printList(searchResultsSection, searchList, searchCardClass);
+  addClickListeners(searchCardClass, handleClickInSearchCards);
+  markSearchCardOnFavs();
 }
 
 function queryApiPrintResults(urlSearch) {
@@ -173,12 +177,14 @@ function queryApiPrintResults(urlSearch) {
           serie.show.image === null ? defaultImage : serie.show.image.medium;
         searchList.push(serieObject);
       }
-      printList(searchResultsSection, searchList, searchCardClass);
-      addClickListeners(searchCardClass, handleClickInSearchCards);
+      if (urlSearch === defaultUrl) {
+        localStorage.setItem('defaultPage', JSON.stringify(searchList));
+      }
+      updateSearchList();
     });
 }
 
-function urlSearch() {
+function urlUserSearch() {
   const userSearch = inputElement.value;
   const finalUrl = `//api.tvmaze.com/search/shows?q=${userSearch}`;
   return finalUrl;
@@ -186,22 +192,7 @@ function urlSearch() {
 
 function handleClickSearch(event) {
   event.preventDefault();
-  queryApiPrintResults(urlSearch());
+  queryApiPrintResults(urlUserSearch());
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
-
-/* 
-¿Cuándo tienen las tarjetas en la búsqueda el fondo cambiado?
-Cuando se hace click sobre ellas (se añaden a fav)
-Cuando al pintar están en la lista de favs
-
-¿Cuándo se quita ese fondo?
-Cuando se elimina de fav
-
-ENTONCES
-
-Cada vez que se actualiza la lista de favs:
-Se remapean los resultados a ver si alguno está ahí
-
-*/
