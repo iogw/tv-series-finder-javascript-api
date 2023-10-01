@@ -8,32 +8,12 @@
       href="https://fonts.googleapis.com/css?family=Roboto:wght@400;500;900&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="./assets/images/favicon.png" />
     <link rel="stylesheet" href="./assets/css/main.css" />
   </head>
   <body>
     <include src="./partials/header.html"></include>
-
-    <main class="main">
-      <section class="input-fav-section">
-        <form action="">
-          <input
-            type="text"
-            name=""
-            id=""
-            class="js-search-input"
-            placeholder="Ej: Neko"
-          />
-          <button class="js-search-button search-btn">Buscar</button>
-          <label for="msg-fetch-error" class="js-msg-error msg-error"></label>
-        </form>
-
-        <h3>Mis series favoritas</h3>
-        <div class="favorites-list js-favorites"></div>
-      </section>
-
-      <section class="results-section js-results-section"></section>
-    </main>
-
+    <include src="./partials/main.html"></include>
     <script src="./assets/js/main.js"></script>
   </body>
 </html>
