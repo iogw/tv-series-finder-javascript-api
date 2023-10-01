@@ -1,0 +1,42 @@
+.main {
+    display: flex;
+    // flex-wrap: wrap;
+  }
+  
+  //SEARCH FAV SECTION
+  .search-fav-section {
+    // width: 30rem; no hace nada
+    border: 0.5rem solid rgb(255, 180, 42);
+  }
+  .fav-item {
+    display: flex;
+    align-items: center;
+  }
+  .fav-item img {
+    max-width: 10rem;
+  }
+  .delete-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 50%;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+  }
+  
+  //SEARCH RESULTS SECTION
+  .results-section {
+    // max-width: 50%;
+    border: 0.5rem solid rgb(255, 180, 42);
+  }
+  .search-item-result {
+    display: inline-block;
+    padding: 2rem;
+    margin: 2rem;
+    background-color: rgba(190, 136, 36, 0.2);
+    border: 0.5rem solid rgb(255, 180, 42);
+    list-style: none;
+    max-width: 26rem;
+    cursor: pointer;
+  }
