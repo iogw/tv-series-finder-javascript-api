@@ -38,45 +38,25 @@ if (savedLsFavs !== null) {
   updateFavsAndLS();
 }
 
-// FAVORITE FUNCTIONALITY
-function handleClickInSearchCards(event) {
-  const cardClicked = event.currentTarget;
-  const indexinFavOfSelected = favList.findIndex(
-    (item) => item.id === parseInt(cardClicked.id)
+// FUNCTIONS
+//Generic
+function indexInFav(elementToFind) {
+  const idxinFav = favList.findIndex(
+    (item) => item.id === parseInt(elementToFind.id)
   );
-  const copyOfCardSelected = searchList.find(
-    (item) => item.id === parseInt(cardClicked.id)
+  return idxinFav;
+}
+function findInSearchList(elementToFind) {
+  const elementFinded = searchList.find(
+    (item) => item.id === parseInt(elementToFind.id)
   );
-
-  //¿Is on fav list? Then add or delete
-  if (indexinFavOfSelected === -1) {
-    favList.push(copyOfCardSelected);
-  } else {
-    favList.splice(indexinFavOfSelected, 1);
-  }
-  updateFavsAndLS();
+  return elementFinded;
 }
-function handleDeleteFavButton(event) {
-  const buttonClicked = event.currentTarget;
-  const favToDelete = buttonClicked.parentElement;
-  const indexinFavOfSelected = favList.findIndex(
-    (item) => item.id === parseInt(favToDelete.id)
-  );
-  favList.splice(indexinFavOfSelected, 1);
-  updateFavsAndLS();
-}
-function handleResetButton() {
-  favList = [];
-  updateFavsAndLS();
-}
-
-//ADD LISTENERS
 function docQuerySel(toClass) {
   const classToSelect = `.${toClass}`;
   const elementsToSelect = document.querySelectorAll(classToSelect);
   return elementsToSelect;
 }
-
 function addClickListeners(toClass, handleFunction) {
   const elementsToListen = docQuerySel(toClass);
   for (const elementToListen of elementsToListen) {
@@ -84,7 +64,7 @@ function addClickListeners(toClass, handleFunction) {
   }
 }
 
-// RENDER AND PRINT LIST CARDS
+//Render and print lists cards
 function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
@@ -103,7 +83,6 @@ function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
 
   return newListElement;
 }
-
 function renderSerieCard(item, cardClass) {
   //Content and atributes for every serie-card
   const serieID = item.id;
@@ -122,9 +101,6 @@ function renderSerieCard(item, cardClass) {
   );
   return newSerieCard;
 }
-
-//PRINT FUNCTIONS
-
 function printList(whereToPrint, listToPrint, classOfItem) {
   whereToPrint.textContent = '';
   const newUlElement = document.createElement('ul');
@@ -134,6 +110,7 @@ function printList(whereToPrint, listToPrint, classOfItem) {
   whereToPrint.appendChild(newUlElement);
 }
 
+//Add buttons on favorites lists
 function addDeleteFavButtons(toClass) {
   const liFavElements = docQuerySel(toClass);
 
@@ -147,7 +124,6 @@ function addDeleteFavButtons(toClass) {
     addClickListeners(deleteBtnClss, handleDeleteFavButton);
   }
 }
-
 function addResetFavButton() {
   const newDeleteButton = document.createElement('button');
   const buttonContent = document.createTextNode('Eliminar todos tus favoritos');
@@ -165,23 +141,22 @@ function addResetFavButton() {
   favoritesSection.firstElementChild.appendChild(newDeleteButton);
   addClickListeners(resetBtnClss, handleResetButton);
 }
+
 function markSearchCardOnFavs() {
   const liSearchEls = docQuerySel(searchCardClass);
   for (const elementOnList of liSearchEls) {
-    const indexinFavOfSelected = favList.findIndex(
-      (item) => item.id === parseInt(elementOnList.id)
-    );
+    const idxInFav = indexInFav(elementOnList);
 
-    if (indexinFavOfSelected === -1) {
-      elementOnList.style.backgroundColor = '';
-      elementOnList.style.color = '';
-    } else {
+    if (idxInFav !== -1) {
       elementOnList.style.backgroundColor = favMarkedBgColor;
       elementOnList.style.color = favMarkedTextColor;
+    } else {
+      elementOnList.style.color = '';
+      elementOnList.style.backgroundColor = '';
     }
   }
 }
-
+//Update Lists
 function updateFavsAndLS() {
   printList(favoritesSection, favList, favCardClass);
   addDeleteFavButtons(favCardClass);
@@ -195,13 +170,22 @@ function updateSearchList() {
   markSearchCardOnFavs();
 }
 
+// API functions
 function msgError(error) {
   const errMsgContent = document.createTextNode(
     `Ha sucedido un error: ${error}`
   );
   labelMsgError.appendChild(errMsgContent);
 }
-
+function urlUserSearch() {
+  const userSearch = inputElement.value;
+  labelMsgError.textContent = '';
+  if (userSearch === '') {
+    msgError('¡No has buscado nada!');
+  }
+  const finalUrl = `//api.tvmaze.com/search/shows?q=${userSearch}`;
+  return finalUrl;
+}
 function queryApiPrintResults(urlSearch) {
   searchList = [];
   fetch(urlSearch)
@@ -225,16 +209,28 @@ function queryApiPrintResults(urlSearch) {
     });
 }
 
-function urlUserSearch() {
-  const userSearch = inputElement.value;
-  labelMsgError.textContent = '';
-  if (userSearch === '') {
-    msgError('¡No has buscado nada!');
-  }
-  const finalUrl = `//api.tvmaze.com/search/shows?q=${userSearch}`;
-  return finalUrl;
-}
+// Handle functions
+function handleClickInSearchCards(event) {
+  const cardClicked = event.currentTarget;
+  const copyOfCardSelected = findInSearchList(cardClicked);
+  const idxInFav = indexInFav(cardClicked);
+  idxInFav === -1
+    ? favList.push(copyOfCardSelected)
+    : favList.splice(idxInFav, 1);
 
+  updateFavsAndLS();
+}
+function handleDeleteFavButton(event) {
+  const buttonClicked = event.currentTarget;
+  const favToDelete = buttonClicked.parentElement;
+  const idxInFav = indexInFav(favToDelete);
+  favList.splice(idxInFav, 1);
+  updateFavsAndLS();
+}
+function handleResetButton() {
+  favList = [];
+  updateFavsAndLS();
+}
 function handleClickSearch(event) {
   event.preventDefault();
   queryApiPrintResults(urlUserSearch());
