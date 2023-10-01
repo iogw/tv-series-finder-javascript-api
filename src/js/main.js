@@ -9,7 +9,7 @@ const favoritesSection = document.querySelector('.js-favorites');
 //Default
 const defaultImage =
   'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
-const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Kawai';
+const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Neko';
 
 const favMarkedColor = '#ffa600';
 
@@ -55,7 +55,7 @@ function handleClickInSearchCards(event) {
   }
   updateFavsAndLS();
 }
-function handleDeleteButton(event) {
+function handleDeleteFavButton(event) {
   const buttonClicked = event.currentTarget;
   const favToDelete = buttonClicked.parentElement;
   const indexinFavOfSelected = favList.findIndex(
@@ -133,7 +133,7 @@ function printList(whereToPrint, listToPrint, classOfItem) {
   whereToPrint.appendChild(newUlElement);
 }
 
-function addDeleteButtons(toClass) {
+function addDeleteFavButtons(toClass) {
   const liFavElements = docQuerySel(toClass);
 
   for (const liFavElement of liFavElements) {
@@ -143,7 +143,7 @@ function addDeleteButtons(toClass) {
     newDeleteButton.appendChild(buttonContent);
 
     liFavElement.appendChild(newDeleteButton);
-    addClickListeners(deleteBtnClss, handleDeleteButton);
+    addClickListeners(deleteBtnClss, handleDeleteFavButton);
   }
 }
 
@@ -152,7 +152,6 @@ function addResetFavButton() {
   const buttonContent = document.createTextNode('Eliminar todos tus favoritos');
   newDeleteButton.setAttribute('class', resetBtnClss);
   newDeleteButton.appendChild(buttonContent);
-  console.log(favList);
   if (favList.length === 0) {
     newDeleteButton.setAttribute('disabled', 'disabled');
   } else {
@@ -182,7 +181,7 @@ function markSearchCardOnFavs() {
 
 function updateFavsAndLS() {
   printList(favoritesSection, favList, favCardClass);
-  addDeleteButtons(favCardClass);
+  addDeleteFavButtons(favCardClass);
   addResetFavButton();
   markSearchCardOnFavs();
   localStorage.setItem('favList', JSON.stringify(favList));
@@ -191,6 +190,14 @@ function updateSearchList() {
   printList(searchResultsSection, searchList, searchCardClass);
   addClickListeners(searchCardClass, handleClickInSearchCards);
   markSearchCardOnFavs();
+}
+
+function msgErrorApi(error) {
+  const labelMsgError = document.querySelector('.js-msg-error');
+  const errMsgContent = document.createTextNode(
+    `Ha sucedido un error: ${error}`
+  );
+  labelMsgError.appendChild(errMsgContent);
 }
 
 function queryApiPrintResults(urlSearch) {
@@ -210,6 +217,9 @@ function queryApiPrintResults(urlSearch) {
         localStorage.setItem('defaultPage', JSON.stringify(searchList));
       }
       updateSearchList();
+    })
+    .catch((error) => {
+      msgErrorApi(error);
     });
 }
 
