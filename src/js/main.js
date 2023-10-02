@@ -1,44 +1,44 @@
 'use strict';
 
-//CONSTANTS
+//Selectors of html elements
 const inputElement = document.querySelector('.js-search-input');
 const btnSearch = document.querySelector('.js-search-button');
 const labelMsgError = document.querySelector('.js-msg-error');
 const favoritesSection = document.querySelector('.js-favorites');
 const searchResultsSection = document.querySelector('.js-results-section');
-
-//Default
-const defaultImage = './assets/images/img-not-found.png';
-const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Neko';
-
-const favMarkedBgColor = '#ffa600';
-const favMarkedTextColor = '#fff';
-
-//  HTML-CSS CLASS
+//html-css-listeners CLASS
 const searchCardClass = 'search-item-result';
 const favCardClass = 'fav-item';
 const deleteBtnClss = 'delete-btn';
 const resetBtnClss = 'reset-btn';
-
+//Colors on fav cards
+const favMarkedBgColor = '#ffa600';
+const favMarkedTextColor = '#fff';
+// Lists of cards
 let searchList = [];
 let favList = [];
-
-//LOCAL STORAGE
-const savedDefaultPage = JSON.parse(localStorage.getItem('defaultPage'));
-if (savedDefaultPage === null) {
-  queryApiPrintResults(defaultUrl);
-} else {
-  searchList = savedDefaultPage;
-  updateSearchList();
-}
-
-const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
-if (savedLsFavs !== null) {
-  favList = savedLsFavs;
-  updateFavsAndLS();
-}
+//Default page
+const defaultImage = './assets/images/img-not-found.png';
+const defaultUrl = 'https://api.tvmaze.com/search/shows?q=Neko';
 
 // FUNCTIONS
+//LOCAL STORAGE
+function savedDefaultPageLS() {
+  const savedDefaultPage = JSON.parse(localStorage.getItem('defaultPage'));
+  if (savedDefaultPage === null) {
+    queryApiPrintResults(defaultUrl);
+  } else {
+    searchList = savedDefaultPage;
+    updateSearchList();
+  }
+}
+function savedLsFavs() {
+  const savedLsFavs = JSON.parse(localStorage.getItem('favList'));
+  if (savedLsFavs !== null) {
+    favList = savedLsFavs;
+    updateFavsAndLS();
+  }
+}
 //Generic
 function indexInFav(elementToFind) {
   const idxinFav = favList.findIndex(
@@ -52,20 +52,20 @@ function findInSearchList(elementToFind) {
   );
   return elementFinded;
 }
-function docQuerySel(toClass) {
+function docQuerySelAll(toClass) {
   const classToSelect = `.${toClass}`;
   const elementsToSelect = document.querySelectorAll(classToSelect);
   return elementsToSelect;
 }
 function addClickListeners(toClass, handleFunction) {
-  const elementsToListen = docQuerySel(toClass);
+  const elementsToListen = docQuerySelAll(toClass);
   for (const elementToListen of elementsToListen) {
     elementToListen.addEventListener('click', handleFunction);
   }
 }
 
 //Render and print lists cards
-function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
+function createNewCard(liClass, liID, title, imgUrl, imgAlt) {
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
   newImgElement.setAttribute('alt', imgAlt);
@@ -79,12 +79,10 @@ function createNewLiElement(liClass, liID, title, imgUrl, imgAlt) {
   newListElement.setAttribute('id', liID);
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
-  newListElement.appendChild(newTitleElement);
-
   return newListElement;
 }
 function renderSerieCard(item, cardClass) {
-  //Content and atributes for every serie-card
+  //Create content and attributes for every serie-card
   const serieID = item.id;
   const serieName = item.title;
   const imgUrl = item.image;
@@ -92,58 +90,50 @@ function renderSerieCard(item, cardClass) {
     item.image === defaultImage ? 'Serie sin imagen' : `Imagen de ${serieName}`;
 
   //Create serie-card
-  const newSerieCard = createNewLiElement(
-    cardClass,
-    serieID,
-    serieName,
-    imgUrl,
-    imgAlt
-  );
-  return newSerieCard;
+  const newCard = createNewCard(cardClass, serieID, serieName, imgUrl, imgAlt);
+  return newCard;
 }
 function printList(whereToPrint, listToPrint, classOfItem) {
   whereToPrint.textContent = '';
   const newUlElement = document.createElement('ul');
   for (const itemOfList of listToPrint) {
-    newUlElement.appendChild(renderSerieCard(itemOfList, classOfItem));
+    const newCard = renderSerieCard(itemOfList, classOfItem);
+    newUlElement.appendChild(newCard);
   }
   whereToPrint.appendChild(newUlElement);
 }
 
-//Add buttons on favorites lists
+//Add buttons on favorite list
+function createButton(textInside, buttonClass) {
+  const newDeleteButton = document.createElement('button');
+  const buttonContent = document.createTextNode(textInside);
+  newDeleteButton.setAttribute('class', buttonClass);
+  newDeleteButton.appendChild(buttonContent);
+  return newDeleteButton;
+}
 function addDeleteFavButtons(toClass) {
-  const liFavElements = docQuerySel(toClass);
-
+  const liFavElements = docQuerySelAll(toClass);
   for (const liFavElement of liFavElements) {
-    const newDeleteButton = document.createElement('button');
-    const buttonContent = document.createTextNode('x');
-    newDeleteButton.setAttribute('class', deleteBtnClss);
-    newDeleteButton.appendChild(buttonContent);
-
-    liFavElement.appendChild(newDeleteButton);
+    const deleteButton = createButton('x', deleteBtnClss);
+    liFavElement.appendChild(deleteButton);
     addClickListeners(deleteBtnClss, handleDeleteFavButton);
   }
 }
 function addResetFavButton() {
-  const newDeleteButton = document.createElement('button');
-  const buttonContent = document.createTextNode('Eliminar todos tus favoritos');
-  newDeleteButton.setAttribute('class', resetBtnClss);
-  newDeleteButton.appendChild(buttonContent);
-  if (favList.length === 0) {
-    newDeleteButton.setAttribute('disabled', 'disabled');
-  } else {
-    newDeleteButton.removeAttribute('disabled');
-  }
+  const deleteButton = createButton(
+    'Eliminar todos tus favoritos',
+    resetBtnClss
+  );
   favList.length === 0
-    ? newDeleteButton.setAttribute('disabled', 'disabled')
-    : newDeleteButton.removeAttribute('disabled');
-
-  favoritesSection.firstElementChild.appendChild(newDeleteButton);
+    ? deleteButton.setAttribute('disabled', 'disabled')
+    : deleteButton.removeAttribute('disabled');
+  favoritesSection.firstElementChild.appendChild(deleteButton);
   addClickListeners(resetBtnClss, handleResetButton);
 }
 
+//Update Lists
 function markSearchCardOnFavs() {
-  const liSearchEls = docQuerySel(searchCardClass);
+  const liSearchEls = docQuerySelAll(searchCardClass);
   for (const elementOnList of liSearchEls) {
     const idxInFav = indexInFav(elementOnList);
 
@@ -156,7 +146,6 @@ function markSearchCardOnFavs() {
     }
   }
 }
-//Update Lists
 function updateFavsAndLS() {
   printList(favoritesSection, favList, favCardClass);
   addDeleteFavButtons(favCardClass);
@@ -178,8 +167,8 @@ function msgError(error) {
   labelMsgError.appendChild(errMsgContent);
 }
 function urlUserSearch() {
-  const userSearch = inputElement.value;
   labelMsgError.textContent = '';
+  const userSearch = inputElement.value;
   if (userSearch === '') {
     msgError('¡No has buscado nada!');
   }
@@ -237,3 +226,6 @@ function handleClickSearch(event) {
 }
 
 btnSearch.addEventListener('click', handleClickSearch);
+
+savedDefaultPageLS();
+savedLsFavs();
