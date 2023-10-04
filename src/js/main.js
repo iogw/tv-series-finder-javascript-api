@@ -66,7 +66,7 @@ function findInSearchList(elementToFind) {
 }
 
 //Render and print lists cards
-function createNewCard(liClass, liID, title, imgUrl, imgAlt) {
+function createNewCard(liClass, liID, title, imgUrl, imgAlt, genres) {
   //set up img
   const newImgElement = document.createElement('img');
   newImgElement.setAttribute('src', imgUrl);
@@ -77,12 +77,22 @@ function createNewCard(liClass, liID, title, imgUrl, imgAlt) {
   const newTitle = document.createTextNode(title);
   newTitleElement.appendChild(newTitle);
 
+  //setup genres
+  const newGenreUL = document.createElement('ul');
+  for (const genre of genres) {
+    const newGenreElement = document.createElement('li');
+    const newGenre = document.createTextNode(genre);
+    newGenreElement.appendChild(newGenre);
+    newGenreUL.appendChild(newGenreElement);
+  }
+
   //join in a container
   const newListElement = document.createElement('li');
   newListElement.setAttribute('class', liClass);
   newListElement.setAttribute('id', liID);
   newListElement.appendChild(newImgElement);
   newListElement.appendChild(newTitleElement);
+  newListElement.appendChild(newGenreUL);
   return newListElement;
 }
 function renderSerieCard(item, cardClass) {
@@ -93,8 +103,17 @@ function renderSerieCard(item, cardClass) {
   const imgAlt =
     item.image === defaultImage ? 'Serie sin imagen' : `Imagen de ${serieName}`;
 
+  const genres = item.genres;
+
   //Create serie-card
-  const newCard = createNewCard(cardClass, serieID, serieName, imgUrl, imgAlt);
+  const newCard = createNewCard(
+    cardClass,
+    serieID,
+    serieName,
+    imgUrl,
+    imgAlt,
+    genres
+  );
   return newCard;
 }
 function printList(whereToPrint, listToPrint, classOfItem) {
@@ -190,6 +209,9 @@ function queryApiPrintResults(urlSearch) {
         serieObject.title = serie.show.name;
         serieObject.image =
           serie.show.image === null ? defaultImage : serie.show.image.medium;
+        let genres = [];
+        genres = serie.show.genres;
+        serieObject.genres = genres;
         searchList.push(serieObject);
       }
       if (urlSearch === defaultUrl) {
@@ -204,13 +226,18 @@ function queryApiPrintResults(urlSearch) {
 
 //Handle functions
 function handleClickInSearchCards(event) {
+  // const cardClicked = event.currentTarget;
+  // const copyOfCardSelected = findInSearchList(cardClicked);
+  // const idxInFav = indexInFav(cardClicked);
+  // idxInFav === -1
+  //   ? favList.push(copyOfCardSelected)
+  //   : favList.splice(idxInFav, 1);
+  // reprintFavsUpdtLocStrg();
+
   const cardClicked = event.currentTarget;
   const copyOfCardSelected = findInSearchList(cardClicked);
-  const idxInFav = indexInFav(cardClicked);
-  idxInFav === -1
-    ? favList.push(copyOfCardSelected)
-    : favList.splice(idxInFav, 1);
-  reprintFavsUpdtLocStrg();
+
+  console.log(copyOfCardSelected.title);
 }
 function handleRemoveFavButton(event) {
   const buttonClicked = event.currentTarget;
