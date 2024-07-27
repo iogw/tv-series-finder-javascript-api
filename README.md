@@ -5,11 +5,11 @@ Este ejercicio consistía en realizar una aplicación web que te permita buscar 
 
 Propuesta gráfica:
 
-![Captura de pantalla de la propuesta inicial](./src/images/screenshot-layout-proposal.png)
+![Captura de pantalla de la propuesta inicial](./readme-images/screenshot-layout-proposal.png)
 
 Resultado final:
 
-![Captura de pantalla de la aplicación web](./src/images/screenshot-web-app.png)
+![Captura de pantalla de la aplicación web](./readme-images/screenshot-web-app.png)
 
 ## Funcionalidades
 
@@ -21,11 +21,9 @@ Resultado final:
 
 ## Cómo usar la aplicación
 
-1. Ingresa el título de una serie en el campo de búsqueda.
-2. Haz clic en el botón "Buscar".
-3. Aparecerá una lista de series coincidentes.
-4. Haz clic en una serie para marcarla como favorita o desmarcarla si ya es una favorita.
-5. Tus series favoritas se mostrarán en la barra lateral.
+1. Introduce el título de una serie en el campo de búsqueda y haz click en "Buscar" -> Aparecerá una lista de series coincidentes.
+3. Haz clic en una serie para marcarla como favorita o desmarcarla si ya es favorita.
+4. Tus series favoritas se mostrarán en la barra lateral izquierda.
 
 ## Tecnologías utilizadas
 
@@ -37,39 +35,27 @@ Resultado final:
 
 
 ## Herramientas utilizadas
-- Visual Studio Code
+- [Visual Studio Code](https://code.visualstudio.com/)
 - [Adalab web starter kit](https://github.com/Adalab/adalab-web-starter-kit)
 
-## Cómo arrancar el proyecto
-
-### La primera vez que lo arranques:
+## DIY
 > **NOTA:** Necesitas tener instalado [Node JS](https://nodejs.org/)
-1. Clona este repositorio en tu ordenador.
-2. Instala las dependencias desde tu terminal con el siguiente comando:
-```bash
-npm install
-```
-> No te asustes, se creará una carpeta llamada `node_modules\`, son las dependencias.
-3. Arranca el proyecto con:
-```bash
-npm start
-```
-> Con este comando se creará la carpeta `public\`, donde se encuentran los archivos compilados automáticamente de `src\`
+1. Clonar este repositorio en tu ordenador.
+2. Instalar los módulos: `npm i`
+3. Iniciar proyecto: `npm run dev`
 
-### Cada vez que lo quieras arrancar de nuevo:
+Para cualquier modificación en directo, editar los archivos en `src`. Para añadir imágenes: en `public/images`.
 
-- Simplemente abre el repositorio en tu editor de código favorito y ejecuta:
-```bash
-npm start
-```
-> Para finalizar la ejecución en terminal prueba con `ctrl+C` 
+> **CTRL+C** para finalizar el proyecto
+3. Montar el Deploy: `npm run docs`
+o
+4. Montar y subir el Deploy: `npm run deploy`
 
 
+## Comentarios
 
-## Nota de la autora
+Con este proyecto he puesto en práctica todo lo aprendido con React para crear un SPA y el manejo de la información recibida de un API de terceros.
 
-Gracias por interesarte por mi proyecto, cualquier duda o sugerencia mándame un DM &#129299;
-
-Y si quieres contribuir a este proyecto, ¡no dudes en enviar un pull request!
+Ha sido divertido :)
 
 [Irene García Wodak](https://github.com/irenegwodak)
