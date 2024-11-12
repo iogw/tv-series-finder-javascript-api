@@ -57,5 +57,3 @@ o
 Con este proyecto he puesto en práctica todo lo aprendido con React para crear un SPA y el manejo de la información recibida de un API de terceros.
 
 Ha sido divertido :)
-
-[Irene García Wodak](https://github.com/irenegwodak)
